@@ -21,7 +21,7 @@
         <div class="main">
             <div class="container a-container" id="a-container">
 
-                <form class="form" id="a-form" method="" action="">
+                <form class="form" id="a-form">
                     <h2 class="form_title title">创建账号</h2>
                     <!-- 第三方登录
                     <div class="form__icons"><img class="form__icon" ><img class="form__icon" ></div><span class="form__span">or use email for registration</span>
@@ -29,15 +29,17 @@
                     <div style="color: red" class="errmsg" id="errmsg"></div>
                     <input id="id_username" name="username" class="form__input" type="text" placeholder="用户名">
                     <input id="id_email" name="email" class="form__input" type="text" placeholder="Email">
-                    <input id="id_mobile_phpne" name="mobile_phpne" class="form__input" type="text" placeholder="手机号">
                     <input id="id_password" name="password" class="form__input" type="password" placeholder="密码">
                     <input id="id_password1" name="password1" class="form__input" type="password" placeholder="再次输入密码">
+                    <input id="id_mobile_phpne" name="mobile_phpne" class="form__input" type="text" placeholder="手机号">
                     <input id="id_code" name="code" class="form__input" type="text" placeholder="手机验证码">
+                    <div style="width: 60%; padding-top: 5px">
+                       <button style="float: left; width: 100px; height: 30px; font-size: 10px; padding-right: 120px; line-height: 10px" id="button_code" class="code_button">点击获取手机验证码</button>
+                        <div id="time_span" class="form__span" style="width: 50%; margin-top: 10px; float: right;"></div>
+                    </div>
 
-                    <button style="width: 100px; height: 30px; font-size: 10px; padding-right: 100px; line-height: 10px" id="button_code" class="code_button">点击获取验证码</button>
-{#                    <input type="button" id="button_code" class="btn btn-default button" value="点击获取验证码">#}
-
-                    <button class="form__button button submit">立即注册</button>
+                    <button  id="register" class="form__button button">立即注册</button>
+                    {% csrf_token %}
                 </form >
 
             </div>
@@ -82,7 +84,8 @@
 
         // 绑定全部input框
         $('input').on('focus', function () {
-            $('.errmsg').css('html', '')
+            $('.errmsg').text('')
+            {#$('.errmsg').css('display', 'none')#}
         })
 
         // 获取验证码
@@ -104,11 +107,12 @@
                             var timeStop = setInterval(function () {
                                 timeo--;
                                 if (timeo > 0) {
-                                    that.val('发送成功' + timeo + 's');
+                                    that.css('background', '#9698a1')
+                                    $('#time_span').html('等待' + timeo + 's');
                                     that.attr('disabled', 'disabled');//禁止点击
                                 } else {
                                     timeo = 60;//当减到0时赋值为60
-                                    that.val('点击获取验证码');
+                                    that.css('background', '#262728')
                                     clearInterval(timeStop);//清除定时器
                                     that.removeAttr('disabled');//移除属性，可点击
                                 }
@@ -134,7 +138,7 @@
         }
 
         // 登录
-        $('#register').on('click', function (event) {
+        $('#register').on('click', function () {
         event.preventDefault();
         var data = $('form').serialize();
         $.post('{% url 'user:register' %}', data, function (data) {
@@ -143,8 +147,16 @@
                 location.href = '/web/' + data.data
             } else {
                 $.each(data.error, function (key, val) {
-                        $('#' + key + '_errmsg').show().text(val[0])
+                    if (val[0] == '这个字段是必填项。')
+                    {
+                        $('#errmsg').show().text('请将信息补充完整')
                     }
+                    else
+                    {
+                       $('#errmsg').show().text(val[0])
+                    }
+
+                }
                 )
             }
         })

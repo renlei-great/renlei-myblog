@@ -49,7 +49,7 @@ def register(request):
         # 处理提交
         form = RegisterForm(request.POST)
         if not form.is_valid():
-            return JsonResponse({'status': False, 'error': form.errors[0]})
+            return JsonResponse({'status': False, 'error': form.errors})
         user = form.save()
         conn = get_redis_connection()
         conn.delete(user.mobile_phpne)
