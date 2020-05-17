@@ -4,11 +4,16 @@ import bcrypt
 from django.core.validators import RegexValidator
 from django.db.models import Q
 from django_redis import get_redis_connection
+from captcha.fields import CaptchaField
 
 from user.forms.bootstrap import BootsTrap
 from user.models import UserInfo
 from myblog.settings import SMS_TEMPLATE
 from utils.tencent.sms import send_sms_single
+
+
+class CaptchaForm(forms.Form):
+    captcha = CaptchaField()
 
 
 class LoginForm(BootsTrap, forms.Form):
@@ -26,16 +31,50 @@ class LoginForm(BootsTrap, forms.Form):
 
     def clean_password(self):
         try:
+            # 手机号不可为空
             pwd = self.cleaned_data['mobile_phpne'].password
         except KeyError:
-            raise ValidationError('')
+            return
         password = self.cleaned_data['password']
 
         if not bcrypt.checkpw(password.encode(), pwd.encode()):
-            self.add_error('mobile_phpne', '用户名或密码错误')
-            raise ValidationError('')
+            raise ValidationError('用户名或密码错误')
 
         return password
+
+
+class LoginSmsForm(BootsTrap, forms.Form):
+    """用户短信登录表单"""
+    mobile_phpne = forms.CharField(label='手机号', validators=[RegexValidator(r'^1([3|4|5|6|7|8|9])\d{9}', '手机格式错误')])
+    code = forms.CharField(label="验证码")
+
+    def clean_mobile_phpne(self):
+        mobile = self.cleaned_data['mobile_phpne']
+        user_object = UserInfo.objects.filter(mobile_phpne=mobile).first()
+        if not user_object:
+            raise ValidationError('手机号未注册++')
+
+        return user_object
+
+    def clean_code(self):
+        code = self.cleaned_data['code']
+        try:
+            user_object = self.cleaned_data['mobile_phpne']
+        except KeyError:
+            raise ValidationError('')
+
+        # 从redis中取数据
+        conn = get_redis_connection()
+        code_redis = conn.get(user_object.mobile_phpne)
+        try:
+            code_redis = code_redis.decode()
+            if code_redis != code:
+                pass
+                raise ValidationError('验证码错误')
+            pass
+            return code
+        except AttributeError:
+            raise ValidationError('请先获取验证码')
 
 
 class RegisterForm(BootsTrap, forms.ModelForm):

@@ -11,6 +11,7 @@ let switchBtn = document.querySelectorAll(".switch-btn");
 let aContainer = document.querySelector("#a-container");
 let bContainer = document.querySelector("#b-container");
 let allButtons = document.querySelectorAll(".submit");
+let cContainer = document.querySelector("#c-container");
 
 let getButtons = (e) => e.preventDefault()
 
@@ -30,6 +31,8 @@ let changeForm = (e) => {
     aContainer.classList.toggle("is-txl");
     bContainer.classList.toggle("is-txl");
     bContainer.classList.toggle("is-z200");
+    cContainer.classList.toggle("is-txl");
+    cContainer.classList.toggle("is-z200");
 }
 
 let mainF = (e) => {

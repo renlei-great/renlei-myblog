@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django_redis import get_redis_connection
 
-from user.forms.account import LoginForm, RegisterForm, SendSmSForm
+from user.forms.account import LoginForm, RegisterForm, SendSmSForm, LoginSmsForm, CaptchaForm
 
 
 # def register(request):
@@ -10,19 +10,16 @@ from user.forms.account import LoginForm, RegisterForm, SendSmSForm
 
 
 def login(request):
-    """短信登录"""
+    """密码登录"""
     if request.method == 'GET':
-        login_form = LoginForm()
-        # captcha = CaptchaForm()
+        captcha = CaptchaForm()
 
-        # return render(request, 'login.html', {'form': login_form, 'capt': captcha})
-        return render(request, 'user/login.html', {'form': login_form})
+        return render(request, 'user/login.html', {'capt': captcha})
 
     if request.method == 'POST':
         """表单提交"""
         login_form = LoginForm(request.POST)
-        # capt = CaptchaForm(request.POST)
-        capt = None
+        capt = CaptchaForm(request.POST)
 
         if not capt.is_valid():
             return JsonResponse({'status': False, 'error': capt.errors})
@@ -36,7 +33,35 @@ def login(request):
         request.session['user_id'] = user_object.id
         request.session.set_expiry(60 * 60 * 24 * 14)
 
-        return JsonResponse({'status': True, 'data': '/web/index'})
+        return JsonResponse({'status': True, 'data': '/'})
+
+
+def login_sms(request):
+    """短信登录"""
+    if request.method == 'GET':
+        capt = CaptchaForm()
+
+        return render(request, 'user/login.html', {'capt': capt})
+
+    if request.method == 'POST':
+        """表单提交"""
+        login_form = LoginSmsForm(request.POST)
+
+        if login_form.is_valid():
+            # 获取经过forms处理后的模型对象
+            user_object = login_form.cleaned_data['mobile_phpne']
+            mobile_phpne = user_object.mobile_phpne
+
+            # 删除redis中的记录
+            conn = get_redis_connection()
+            conn.delete(mobile_phpne)
+
+            request.session['user_id'] = user_object.id
+            request.session.set_expiry(60 * 60 * 24 * 14)
+
+            return JsonResponse({'status': True, 'data': '/'})
+
+        return JsonResponse({'status': False, 'error': login_form.errors})
 
 
 def register(request):

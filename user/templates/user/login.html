@@ -1,0 +1,192 @@
+﻿{% extends 'user/layout/login_register_basic.html' %}
+{% load staticfiles %}
+
+{% block css %}
+    <style>
+        #smserrmsg{
+                position: absolute;
+                top: 185px;
+                color: red;
+            }
+        #lerrmsg{
+                position: absolute;
+                top: 185px;
+                color: red;
+            }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="main">
+            <div class="container a-container" id="a-container">
+                <form class="form" id="a-form">
+                    <h2 class="form_title title">密码登录</h2>
+                    <div class="errmsg" id="lerrmsg"></div>
+                    <input id="cid_mobile_phpne" name="mobile_phpne" class="form__input" type="text" placeholder="手机号或邮箱">
+                    <input id="cid_password" name="password" class="form__input" type="password" placeholder="密码">
+                    <div style="width: 64%; float: left">
+                        {{ capt.captcha }}
+                    </div>
+                    <a class="form__link " onclick="togo_register()">还未注册?</a>
+                    <button id="login" class="form__button button">登录</button>
+                    {% csrf_token %}
+                </form>
+            </div>
+
+            <div class="container b-container is-z200 sms_switchover" id="b-container">
+                <form class="form" id="b-form">
+                    <h2 class="form_title title">手机登录</h2>
+                    <div class="errmsg" id="smserrmsg"></div>
+                    <input id="lid_mobile_phpne" name="mobile_phpne" class="form__input" type="text" placeholder="手机号">
+                    <input id="lid_code" name="code" class="form__input" type="text" placeholder="手机验证码">
+                    <div style="width: 60%; padding-top: 5px">
+                       <button style="float: left; width: 100px; height: 30px; font-size: 10px; padding-right: 120px; line-height: 10px" id="lbutton_code" class="code_button">点击获取手机验证码</button>
+                        <div id="ltime_span" class="form__span" style="width: 50%; margin-top: 10px; float: right;"></div>
+                    </div>
+                    <a class="form__link" onclick="togo_register()">还未注册?</a>
+                    <button id="loginsms" class="form__button button">登录</button>
+                    {% csrf_token %}
+                </form>
+            </div>
+
+            <div class="switch" id="switch-cnt">
+                <div class="switch__circle"></div>
+                <div class="switch__circle switch__circle--t"></div>
+                <div class="switch__container" id="switch-c1">
+                    <h2 class="switch__title title">你好朋友 !</h2>
+                    <p class="switch__description description">与我们保持联系,请登录您的个人信息</p>
+                    <button class="switch__button button switch-btn">密码登录</button>
+                </div>
+                <div class="switch__container is-hidden" id="switch-c2">
+                    <h2 class="switch__title title">你好朋友 !</h2>
+                    <p class="switch__description description">输入您的个人信息,并开始与我们沟通</p>
+                    <button class="switch__button button switch-btn">手机登录</button>
+                </div>
+            </div>
+
+        </div>
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+    function togo_register() {
+        location.href = '/register'
+    }
+
+    // 登录获取验证码
+    $('.code_button').on('click', function lobindClickBtncode() {
+            event.preventDefault();
+            $('.errmsg').empty()  // 将内容变为空
+            // 获取手机号
+            varmobile = $('#lid_mobile_phpne').val()
+            var that = $('#lbutton_code')
+            $.ajax({
+                url: "{% url 'user:send_sms' %}",
+                type: "GET",
+                data: {'mobile_phpne': varmobile, 'tpl': 'login'},
+                dataType: "JSON", // 将返回的数据进行josn序列化
+                success: function (data) {
+                    if (data.status) {
+                        var timeo = 60;
+                        var timeStop = setInterval(function () {
+                            timeo--;
+                            if (timeo > 0) {
+                                that.css('background', '#9698a1')
+                                $('#ltime_span').html('等待' + timeo + 's');
+                                that.attr('disabled', 'disabled');//禁止点击
+                            } else {
+                                timeo = 60;//当减到0时赋值为60
+                                that.css('background', '#262728')
+                                clearInterval(timeStop);//清除定时器
+                                that.removeAttr('disabled');//移除属性，可点击
+                                $('#ltime_span').html('');
+                            }
+                        }, 1000)
+                    } else {
+                        $.each(data.error, function (key, val) {
+                            if (val[0] == '这个字段是必填项。' || val[0] == '这个字段是必须的')
+                            {
+                                $('#smserrmsg').show().text('请将信息补充完整')
+                            }
+                            else
+                            {
+                               $('#smserrmsg').show().text(val[0])
+                            }
+
+                        })
+                    }
+                },
+            })
+
+
+
+    }
+    )
+
+    // 短信登录
+    $('#loginsms').on('click', function (event) {
+        event.preventDefault();
+        var data = $('#b-form').serializeArray();
+        $.post('{% url 'user:login_sms' %}', data, function (data) {
+            // 返回结果
+            if (data.status) {
+                location.href = data.data
+            } else {
+                $.each(data.error, function (key, val) {
+                    if (val[0] == '这个字段是必填项。' || val[0] == '这个字段是必须的')
+                            {
+                                $('#smserrmsg').show().text('请将信息补充完整')
+                            }
+                            else
+                            {
+                               $('#smserrmsg').show().text(val[0])
+                            }
+                    }
+                )
+            }
+        })
+
+    })
+
+    // 调用刷新按钮
+    $('.captcha').click(refresh_capt)
+
+    // 密码登录
+    $('#login').on('click', function (event) {
+        event.preventDefault();
+        var data = $('#a-form').serializeArray();
+        console.log(data)
+        $.post('{% url 'user:login' %}', data, function (data) {
+            // 返回结果
+            if (data.status) {
+                location.href = data.data
+            } else {
+                $.each(data.error, function (key, val) {
+                        if (val[0] == '这个字段是必填项。' || val[0] == '这个字段是必须的')
+                        {
+                            $('#lerrmsg').show().text('请将信息补充完整')
+                        }
+                        else
+                        {
+                           $('#lerrmsg').show().text(val[0])
+                        }
+
+                    }
+                )
+                refresh_capt()
+            }
+        })
+
+    })
+
+    // 刷新验证码
+    function refresh_capt() {
+        $.getJSON("/captcha/refresh/", function (result) {
+                $('.captcha').attr('src', result['image_url']);
+                $('#id_captcha_0').val(result['key'])
+            });
+    }
+
+    </script>
+
+{% endblock %}

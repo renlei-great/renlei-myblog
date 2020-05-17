@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user',
+    'captcha',  # 验证码
 ]
 
 MIDDLEWARE = [
@@ -141,6 +142,12 @@ CACHES = {
         }
     }
 }
+
+
+# ----captcha图片验证码的设置 ------------
+# CAPTCHA_OUTPUT_FORMAT = '%(hidden_field)s %(text_field)s %(image)s'
+CAPTCHA_FIELD_TEMPLATE = os.path.join(BASE_DIR, "user/templates/user/captcha/filed_templates.html")
+CAPTCHA_TEXT_FIELD_TEMPLATE = os.path.join(BASE_DIR, "user/templates/user/captcha/text_field.html")
 
 
 # 导入本地配置

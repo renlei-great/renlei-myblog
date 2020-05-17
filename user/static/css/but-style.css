@@ -12,10 +12,10 @@
 .code_button {
   --color: #fff;
   --color-hover: var(--color);
-  --background: #2B3044;
+  --background: #29d;
   --background-hover: var(--background);
   --hover-back: #6D58FF;
-  --hover-front: #5C86FF;
+  --hover-front: #31363b;
   padding: 8px 28px;
   border-radius: 20px;
   line-height: 24px;

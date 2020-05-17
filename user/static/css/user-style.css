@@ -135,6 +135,11 @@ body {
   z-index: 0;
 }
 
+.c-container {
+  left: calc(100% - 600px );
+  z-index: 0;
+}
+
 .switch {
   display: flex;
   justify-content: center;
