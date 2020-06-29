@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'user',
+    'user',  # 用户
+    'blog',  # 博客
     'captcha',  # 验证码
 ]
 
