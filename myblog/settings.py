@@ -11,9 +11,11 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))  # 添加app 路径
 
 
 # Quick-start development settings - unsuitable for production
@@ -38,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user',  # 用户
-    'blog',  # 博客
+    # 'blog',  # 博客
     'captcha',  # 验证码
 ]
 
@@ -125,9 +127,10 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), os.path.join(BASE_DIR, '/user/static/')]
+# , os.path.join(BASE_DIR, '/user/static/')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-# STATIC_ROOT = '/home/renlei/my/myblog/static/'
+# STATIC_ROOT = '/home/renlei/my/myblog/static'
 
 # ----配置redis作为缓存－－－－－－－－－－－－－
 CACHES = {
@@ -147,8 +150,8 @@ CACHES = {
 
 # ----captcha图片验证码的设置 ------------
 # CAPTCHA_OUTPUT_FORMAT = '%(hidden_field)s %(text_field)s %(image)s'
-CAPTCHA_FIELD_TEMPLATE = os.path.join(BASE_DIR, "user/templates/user/captcha/filed_templates.html")
-CAPTCHA_TEXT_FIELD_TEMPLATE = os.path.join(BASE_DIR, "user/templates/user/captcha/text_field.html")
+CAPTCHA_FIELD_TEMPLATE = os.path.join(BASE_DIR, "templates/captcha/filed_templates.html")
+CAPTCHA_TEXT_FIELD_TEMPLATE = os.path.join(BASE_DIR, "templates/captcha/text_field.html")
 
 
 # 导入本地配置

@@ -18,7 +18,8 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^', include('user.urls', namespace='user')),
+    url(r'^', include('apps.user.urls', namespace='user')),
+    url(r'^blog/', include('apps.blog.urls', namespace='blog')),  # 博客管理
 
     url(r'^captcha/', include('captcha.urls')),  # 验证码
 ]

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django_redis import get_redis_connection
 
-from user.forms.account import LoginForm, RegisterForm, SendSmSForm, LoginSmsForm, CaptchaForm
+from apps.user.forms.account import LoginForm, RegisterForm, SendSmSForm, LoginSmsForm, CaptchaForm
 
 
 # def register(request):
@@ -14,7 +14,7 @@ def login(request):
     if request.method == 'GET':
         captcha = CaptchaForm()
 
-        return render(request, 'user/login.html', {'capt': captcha})
+        return render(request, 'login.html', {'capt': captcha})
 
     if request.method == 'POST':
         """表单提交"""
@@ -41,7 +41,7 @@ def login_sms(request):
     if request.method == 'GET':
         capt = CaptchaForm()
 
-        return render(request, 'user/login.html', {'capt': capt})
+        return render(request, 'login.html', {'capt': capt})
 
     if request.method == 'POST':
         """表单提交"""
@@ -68,7 +68,7 @@ def register(request):
     """用户注册"""
     if request.method == 'GET':
         # 显示
-        return render(request, 'user/register.html')
+        return render(request, 'register.html')
 
     elif request.method == 'POST':
         # 处理提交

@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
-from user.views.home import index
-from user.views.account import login, register, send_sms, login_sms
+from apps.user.views.home import index
+from apps.user.views.account import login, register, send_sms, login_sms
 
 urlpatterns = [
     url(r'^login/$', login, name='login'),  # 密码登录
