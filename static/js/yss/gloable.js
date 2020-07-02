@@ -23,7 +23,7 @@ master.start = function ($) {
         var navobjs = $("#nav a");
         $.each(navobjs, function () {
             var href = $(this).attr("href");
-            if (pathname.indexOf(href) != -1) {
+            if ((pathname.indexOf(href) != -1) && (href != '/')){
                 $(this).parent().addClass('current');
             }
         });

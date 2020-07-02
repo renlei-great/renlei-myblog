@@ -39,9 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'user',  # 用户
-    # 'blog',  # 博客
+    'user.apps.UserConfig',  # 用户
+    'blog.apps.BlogConfig',  # 博客
     'captcha',  # 验证码
+    'templatetags'
 ]
 
 MIDDLEWARE = [
@@ -147,6 +148,9 @@ CACHES = {
     }
 }
 
+# 配置media上传路径
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # ----captcha图片验证码的设置 ------------
 # CAPTCHA_OUTPUT_FORMAT = '%(hidden_field)s %(text_field)s %(image)s'
