@@ -14,7 +14,8 @@ master.start = function ($) {
         $(this).addClass('current');
     }, function () {
         var href = $(this).find('a').attr("href");
-        if (pathname.indexOf(href) == -1) {
+        if (pathname.indexOf(href) == -1  || (href == '/')) {
+        // if ((pathname.indexOf(href) != -1) && (href != '/')) {
             $(this).removeClass('current');
         }
     });
@@ -24,6 +25,7 @@ master.start = function ($) {
         $.each(navobjs, function () {
             var href = $(this).attr("href");
             if ((pathname.indexOf(href) != -1) && (href != '/')){
+            // if (pathname.indexOf(href) == -1) {
                 $(this).parent().addClass('current');
             }
         });

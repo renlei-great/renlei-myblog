@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'user.apps.UserConfig',  # 用户
     'blog.apps.BlogConfig',  # 博客
     'captcha',  # 验证码
-    'templatetags'
+    # 'templatetags.blog'  # 前端调用后端
 ]
 
 MIDDLEWARE = [
@@ -156,6 +156,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # CAPTCHA_OUTPUT_FORMAT = '%(hidden_field)s %(text_field)s %(image)s'
 CAPTCHA_FIELD_TEMPLATE = os.path.join(BASE_DIR, "templates/captcha/filed_templates.html")
 CAPTCHA_TEXT_FIELD_TEMPLATE = os.path.join(BASE_DIR, "templates/captcha/text_field.html")
+
+# 分页配置－一页放多少条数据－－－－－－－－－－－
+PER_PAGE_NUM = 10
 
 
 # 导入本地配置

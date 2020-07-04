@@ -1,6 +1,6 @@
 {% extends 'layout/basic.html' %}
 {% load staticfiles %}
-
+{% load blog %}
 {% block title %}
 文章
 {% endblock %}
@@ -12,17 +12,16 @@
 		        <div class="inner">
 		            <article class="article-list bloglist" id="LAY_bloglist" >
 
+                        {% for blog in blog_object_list %}
 						<section class="article-item zoomIn article">
-
-                            {% for blog in blog_object_list %}
 							<div class="fc-flag">置顶</div>
 							<h5 class="title">
 								<span class="fc-blue">【{{ blog.get_blog_cls_display }}】</span>
 								<a href="read.html">{{ blog.title }}</a>
 							</h5>
 							<div class="time">
-								<span class="day">21</span>
-								<span class="month fs-18">1<span class="fs-14">月</span></span>
+{#								<span class="day">{{ blog.create_time }}</span>#}
+{#								<span class="month fs-18">{{ blog.create_time }}<span class="fs-14">月</span></span>#}
 								<span class="year fs-18 ml10">{{ blog.create_time }}</span>
 							</div>
 							<div class="content">
@@ -40,10 +39,14 @@
 								<a href="read.html" class="fc-black f-fwb">继续阅读</a>
 							</div>
 							<aside class="f-oh footer">
+{#                            {% for tag  in blog.tags %}#}
 								<div class="f-fl tags">
 									<span class="fa fa-tags fs-16"></span>
-									<a class="tag">ASP.NET MVC</a>
+									<a class="tag">
+                                            {{ blog.blog_type.title }}
+                                    </a>
 								</div>
+{#                                {% endfor %}#}
 								<div class="f-fr">
 									<span class="read">
 										<i class="fa fa-eye fs-16"></i>
@@ -55,9 +58,15 @@
 									</span>
 								</div>
 							</aside>
-                            {% endfor %}
-						</section>
 
+						</section>
+                        {% endfor %}
+
+                        <nav style="padding-top: 30px" aria-label="..." class="text-center">
+                            <ul class="pagination" style="margin-top: 0;">
+                                {{ page_html|safe }}
+                            </ul>
+                        </nav>
 		            </article>
 		        </div>
 		    </div>
@@ -76,51 +85,45 @@
 			    		<ul class="category mt20" id="category">
 				        	<li data-index="0" class="slider"></li>
 				        	<li data-index="1"><a href="/Blog/Article">全部文章</a></li>
-				            <li data-index="2"><a href="/Blog/Article/1/">个人日记</a></li>
-				            <li data-index="3"><a href="/Blog/Article/2/">HTML5&amp;CSS3</a></li>
-				            <li data-index="4"><a href="/Blog/Article/3/">JavaScript</a></li>
-				            <li data-index="5"><a href="/Blog/Article/4/">ASP.NET MVC</a></li>
-				            <li data-index="6"><a href="/Blog/Article/5/">其它</a></li>
+
+                            {% for type in tag_all %}
+				            <li data-index="{% add_index forloop.counter 1 %}"><a href="/Blog/Article/1/">{{ type.title }}</a></li>
+                            {% endfor %}
+
 			    		</ul>
 					</div>
 					<!--右边悬浮 平板或手机设备显示-->
 					<div class="category-toggle"><i class="layui-icon">&#xe603;</i></div>
 					<div class="article-category">
 					    <div class="article-category-title">分类导航</div>
-					            <a href="/Blog/Article/1/">个人日记</a>
-					            <a href="/Blog/Article/2/">HTML5&amp;CSS3</a>
-					            <a href="/Blog/Article/3/">JavaScript</a>
-					            <a href="/Blog/Article/4/">ASP.NET MVC</a>
-					            <a href="/Blog/Article/5/">其它</a>
+                            {% for type in tag_all %}
+					            <a href="/Blog/Article/1/">{{ type.title }}</a>
+                            {% endfor %}
 					    <div class="f-cb"></div>
 					</div>
 					<!--遮罩-->
 					<div class="blog-mask animated layui-hide"></div>
 					<div class="other-item">
-					    <h5 class="other-item-title">热门文章</h5>
+					    <h5 class="other-item-title">最新文章</h5>
 					    <div class="inner">
 					        <ul class="hot-list-article">
-					                <li> <a href="/Blog/Read/9">2018最新版QQ音乐api调用</a></li>
-					                <li> <a href="/Blog/Read/12">模板分享</a></li>
-					                <li> <a href="/Blog/Read/13">逆水寒</a></li>
-					                <li> <a href="/Blog/Read/4">序章</a></li>
-					                <li> <a href="/Blog/Read/7">解决百度分享插件不支持https</a></li>
-					                <li> <a href="/Blog/Read/11">使用码云和VS托管本地代码</a></li>
-					                <li> <a href="/Blog/Read/14">MUI框架-快速开发APP</a></li>
-					                <li> <a href="/Blog/Read/8">NPOI导入导出Excel</a></li>
+                                {% for blog in new_blogs %}
+					                <li> <a href="/Blog/Read/9">{{ blog.title }}</a></li>
+                                {% endfor %}
 					        </ul>
 					    </div>
 					</div>
 					<div class="other-item">
-					    <h5 class="other-item-title">置顶推荐</h5>
+					    <h5 class="other-item-title">热门推荐</h5>
 					    <div class="inner">
 					        <ul class="hot-list-article">
-					                <li> <a href="/Blog/Read/16">.NET Spire.Doc组件</a></li>
-					                <li> <a href="/Blog/Read/14">MUI框架-快速开发APP</a></li>
-					                <li> <a href="/Blog/Read/9">2018最新版QQ音乐api调用</a></li>
+                                {% for blog in hot_blogs %}
+					                <li> <a href="/Blog/Read/9">{{ blog.title }}</a></li>
+                                {% endfor %}
 					        </ul>
 					    </div>
 					</div>
+                <!-- 最近访客
 					<div class="other-item">
 					    <h5 class="other-item-title">最近访客</h5>
 					    <div class="inner">
@@ -140,6 +143,7 @@
 					        </dl>
 					    </div>
 					</div>
+		        -->
 		        </div>
 		    </div>
 		</div>
