@@ -14,8 +14,20 @@ class Blog(View):
     """博客页"""
     def get(self, request):
         """显示"""
-        # 查询所有的博客
-        blogs = BlogModel.objects.all()
+        blog_type = request.GET.get('type', '')
+
+        # 查询博客
+        if not blog_type:
+            # 查询所有的博客
+            blogs = BlogModel.objects.all().order_by('-create_time')
+        else:
+            try:
+                type_obj = BlogTypeModel.objects.get(id=int(blog_type))
+            except Exception as e:
+                print(f'查询博客报错：{e}')
+                blogs = BlogModel.objects.all().order_by('-create_time')
+            else:
+                blogs = BlogModel.objects.filter(blog_type=int(blog_type)).order_by('-create_time')
 
         # 分页
         per_page = PER_PAGE_NUM
