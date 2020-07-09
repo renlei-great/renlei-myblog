@@ -166,7 +166,7 @@
     <script src="{% static 'layui/layui.js' %}"></script>
     <script src="{% static 'js/yss/gloable.js' %}"></script>
     <script src="{% static 'js/plugins/nprogress.js' %}"></script>
-    <script src="{% static 'plugin/bootstrap/js/bootstrap.min.js' %}"></script>
+
     <script>NProgress.start();</script>
     <!-- ×××××××每个文件不同的ＪＳ×××××××× -->
 
@@ -175,6 +175,7 @@
             NProgress.done();
         };
     </script>
+    <script src="{% static 'plugin/bootstrap/js/bootstrap.min.js' %}"></script>
 {% block js %}
 {% endblock %}
     </body>

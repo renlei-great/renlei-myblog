@@ -6,7 +6,9 @@
 var article = {};
 article.Init = function ($) {
     //var $ = layui.jquery,
-    var slider = 0;
+    var slider = parseInt($(".slider").attr('slider'));
+    // var slider = 0
+
     blogtype();
     //类别导航开关点击事件
     $('.category-toggle').click(function (e) {
@@ -57,14 +59,27 @@ article.Init = function ($) {
             $('.slider').css({ 'top': ((parseInt(num) - 1) * 40) + 'px' });
         }, function () {
             $(this).removeClass('current');
+            // alert(slider)
             $('.slider').css({ 'top': slider });
         });
         $(window).scroll(function (event) {
             var winPos = $(window).scrollTop();
-            if (winPos > 750)
-                $('#categoryandsearch').addClass('fixed');
+            if (winPos >= 500)
+                {
+                    $('#mybut').addClass('fixed');
+                }
             else
-                $('#categoryandsearch').removeClass('fixed');
+                {
+                    $('#mybut').removeClass('fixed');
+                }
+            if (winPos > 750)
+                {
+                    $('#categoryandsearch').addClass('fixed');
+                }
+            else
+                {
+                    $('#categoryandsearch').removeClass('fixed');
+                }
         });
     };
 };

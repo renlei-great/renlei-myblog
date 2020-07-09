@@ -14,7 +14,20 @@ class Blog(View):
     """博客页"""
     def get(self, request):
         """显示"""
-        blog_type = request.GET.get('type', '')
+        blog_type = request.GET.get('type', 0)
+        top = request.GET.get('top', '0')
+
+        # 查询出所有标签
+        tag_all = BlogTypeModel.objects.all().order_by('index')
+        # 判断ｔｏｐ数据是否有误
+        if top.isdecimal():
+            top = int(top)
+            if top > tag_all.count():
+                top = 0
+                blog_type = 0
+        else:
+            top = 0
+            blog_type = 0
 
         # 查询博客
         if not blog_type:
@@ -26,6 +39,7 @@ class Blog(View):
             except Exception as e:
                 print(f'查询博客报错：{e}')
                 blogs = BlogModel.objects.all().order_by('-create_time')
+                top = 0
             else:
                 blogs = BlogModel.objects.filter(blog_type=int(blog_type)).order_by('-create_time')
 
@@ -40,9 +54,6 @@ class Blog(View):
         )
         blog_object_list = blogs[page_object.start:page_object.end]
 
-        # 查询出所有标签
-        tag_all = BlogTypeModel.objects.all().order_by('index')
-
         blogs = BlogModel.objects.all()
         # 最新文章
         new_blogs = blogs.order_by('-create_time')[0:5]
@@ -56,6 +67,7 @@ class Blog(View):
             'tag_all': tag_all,
             'new_blogs': new_blogs,
             'hot_blogs': hot_blogs,
+            'top': top*40,
         }
 
         return render(request, 'article.html', context)
